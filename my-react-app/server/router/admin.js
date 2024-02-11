@@ -1,7 +1,9 @@
 import jwt from "jsonwebtoken";
 import express from "express";
 import { User, Quiz } from "../db/db.js";
+import routeAuthorization from "../middleware/auth.js";
 const router = express.Router();
+
 // secret Key
 const secretKey = "sec69";
 
@@ -17,20 +19,18 @@ router.post("/login", async (req, res) => {
 
   // Finding loginData in dataBAse
   const user = await User.findOne({ email, password });
-  //console.log(user);
 
   // if LoginData Found In DatabAse
   if (user) {
     // Getting userId From Backend
     const userId = user._id;
-    console.log(userId);
-    const objectIdNumber = parseInt(userId, 16);
-    console.log(objectIdNumber);
 
     // Generating Token For Auth
     const token = jwt.sign(loginData, secretKey);
     // Response To Frontend;
-    res.status(200).json({ mes: "Logged In Succefuuly ", token: token });
+    res
+      .status(200)
+      .json({ mes: "Logged In Succefuuly ", token: token, userId: userId });
   } else {
     // Response t ofrontend
     res.status(401).json({ mes: "Invalid Email or password" });
@@ -73,7 +73,7 @@ router.get("/dashboard", (req, res) => {
 });
 
 // ADMIN CREATE QUIZ ROUTE
-router.post("/createquiz", async (req, res) => {
+router.post("/createquiz", routeAuthorization, async (req, res) => {
   try {
     const {
       type,
@@ -95,9 +95,34 @@ router.post("/createquiz", async (req, res) => {
     });
 
     // Generate a link (you can customize this part based on your requirements)
-    const quizLink = `https://yourwebsite.com/quiz/${quiz._id}`;
+    const quizLink = `https://localhost:5173/quiz/${quiz._id}`;
 
-    res.status(201).json({ quizLink });
+    res.status(201).json({ mes: quizLink });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+// USER ACCESS QUIZ ROUTE
+router.get("/quiz/:quizId", routeAuthorization, async (req, res) => {
+  try {
+    const { quizId } = req.params;
+    console.log("HII");
+    console.log(quizId);
+
+    // Fetch quiz details by ID
+    const quiz = await Quiz.findById(quizId);
+    console.log(quiz);
+
+    if (!quiz) {
+      return res.status(404).json({ error: "Quiz not found" });
+    }
+
+    // Here, you can send the quiz details to the frontend
+    // For example, you might want to send the questions, type, etc.
+
+    res.status(200).json({ quiz });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });

@@ -8,6 +8,9 @@ import QuizAnalysis from "./Components/QuizAnalysis.jsx";
 import CreateQuiz from "./Components/CreateQuiz.jsx";
 import Home from "./Components/Home.jsx";
 import App from "./App.jsx";
+import QuizComponent from "./Components/QuizComponent.jsx";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const router = createBrowserRouter([
   {
@@ -29,10 +32,15 @@ const router = createBrowserRouter([
       },
     ],
   },
+  {
+    path: "/quiz/:quizId",
+    element: <QuizComponent />,
+  },
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <RouterProvider router={router} />
+    <ToastContainer />
   </React.StrictMode>
 );

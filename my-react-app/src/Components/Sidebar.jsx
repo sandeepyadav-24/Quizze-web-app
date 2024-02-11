@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 const Sidebar = () => {
   const btnHandler = () => {
     localStorage.removeItem("token");
+    window.location = "/";
   };
   return (
     <div className="bg-white text-white h-screen w-1/4 p-4">

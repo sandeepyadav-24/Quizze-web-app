@@ -1,8 +1,31 @@
 import { useSetRecoilState } from "recoil";
+import { useRecoilValue } from "recoil";
 import PhaseChangeState from "../Atom/PhaseChangeState";
+import LinkPhase from "../Atom/LinkPhase";
+
+import { toast } from "react-toastify";
 
 const PhaseThree = () => {
+  // Recoil for Seytting Phase Value
   const setPhaseValue = useSetRecoilState(PhaseChangeState);
+
+  // Link Which Get from Atom
+  const link = useRecoilValue(LinkPhase);
+  console.log(link);
+  // Function to Handle To COpy To Clipboard
+  const handleCopyToClipboard = async () => {
+    // Function to Copy Link To Clipboard
+    await navigator.clipboard.writeText(link);
+    console.log("Toast");
+    // Alert Message
+    toast.success("Link copied to ClipBoard", {
+      position: "top-right",
+      autoClose: 2000, // Close after 3 seconds
+      hideProgressBar: false,
+      closeOnClick: false,
+      pauseOnHover: true,
+    });
+  };
 
   return (
     <div className="bg-[#F2F2F2] h-screen p-40">
@@ -19,9 +42,13 @@ const PhaseThree = () => {
         <input
           className="my-5 py-3 rounded-lg px-5"
           placeholder="Your link is here"
-          value={"adsdhv"}
+          value={link}
+          readOnly
         ></input>
-        <button className="bg-green-600 text-white mx-40 py-2 rounded-lg my-5">
+        <button
+          className="bg-green-600 text-white mx-40 py-2 rounded-lg my-5"
+          onClick={handleCopyToClipboard}
+        >
           Share
         </button>
       </div>

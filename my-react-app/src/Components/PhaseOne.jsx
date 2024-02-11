@@ -1,11 +1,21 @@
 import { useState } from "react";
 import { useSetRecoilState } from "recoil";
 import PhaseChangeState from "../Atom/PhaseChangeState";
+import QuizName from "../Atom/QuizName";
 const PhaseOne = () => {
   const setPhaseValue = useSetRecoilState(PhaseChangeState);
+  const setQuizNameAtom = useSetRecoilState(QuizName);
   const [quizName, setQuizName] = useState("");
   const [poll, setPoll] = useState(false);
   const [qna, setQna] = useState(false);
+
+  const btnClick = () => {
+    // Change Phase As Moving Forward
+    setPhaseValue("phase2");
+
+    // Setting QuizAnem To Atom For Future Retrival
+    setQuizNameAtom(quizName);
+  };
   return (
     <div className="bg-[#F2F2F2] h-screen p-40">
       <div className="w-3/4">
@@ -43,9 +53,7 @@ const PhaseOne = () => {
           </button>
           <button
             className="px-10 py-2 bg-white rounded-lg mx-6 "
-            onClick={() => {
-              setPhaseValue("phase2");
-            }}
+            onClick={btnClick}
           >
             Continue
           </button>

@@ -1,10 +1,18 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSetRecoilState } from "recoil";
+import UserId from "../Atom/UserId";
+import { toast } from "react-toastify";
 
 const Login = () => {
   // useState for Email
   const [email, setEmail] = useState("");
   // useState for Password
   const [password, setPassword] = useState("");
+
+  const [userAtom, setUserAtom] = useState("");
+
+  // Using useSetRecoilState to SEt UserID to Atom
+  //const setUserId = useSetRecoilState(UserId);
 
   // Btn Click Handler
   const btnClick = async () => {
@@ -14,7 +22,7 @@ const Login = () => {
       password: password,
     };
     // Url For Backend Fetching
-    const link = "http://localhost:3000/admin/login/";
+    const url = "http://localhost:3000/admin/login/";
     // Options For BAckend
     const options = {
       method: "POST",
@@ -25,26 +33,43 @@ const Login = () => {
     };
 
     // Fetch Function
-    fetch(link, options)
-      .then((response) => {
-        // Response Converting To Json
-        return response.json();
-      })
-      .then((data) => {
-        // If Token Is Within response
-        if (data.token) {
-          // Setting LocalStorage
-          localStorage.setItem("token", data.token);
-          // Alert Message As Response
-          alert(JSON.stringify(data.mes));
-          window.location.reload();
-          //window.location = "/dashboard";
-        } else {
-          // If Token Is not Within Response
-          alert(JSON.stringify(data.mes));
-        }
+    const response = await fetch(url, options);
+    // Response Converting To Json
+    const data = await response.json();
+
+    // If Token Is Within response
+    if (data.token) {
+      // Setting LocalStorage
+      localStorage.setItem("token", data.token);
+
+      //setUserAtom(data.userId);
+
+      // Setting User Id to Atom As it Comes From Backend
+      //await setUserId(data.userId);
+
+      // Redirect to the dashboard
+      window.location = "/dashboard";
+
+      // Alert Message As Response
+      //alert(JSON.stringify(data.mes));
+    } else {
+      // If Token Is not Within Response
+      toast.success(JSON.stringify(data.mes), {
+        position: "top-right",
+        autoClose: 2000, // Close after 3 seconds
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
       });
+    }
   };
+
+  // useEffect to handle side effects after setting the user ID
+  //useEffect(() => {
+  // You can add any side effects or additional logic here
+  //console.log("User ID has been updated:", userAtom);
+  //setUserId(userAtom);
+  //}, [userAtom]);
 
   return (
     <div className="px-40 py-10 ">
